@@ -36,7 +36,7 @@ export class BuildEnumerator extends PackageEnumerator {
 
         await this.installBeforeBuild(packages[packageJson.name], packages);
 
-        const targetTarPath = path.join(this.artifactBuildPath,  packageJson.name + ".tgz");
+        const targetTarPath = path.join(this.artifactBuildPath, packageJson.name + ".tgz");
 
         let shouldPack = !fs.existsSync(targetTarPath);
 
@@ -122,7 +122,7 @@ export class BuildEnumerator extends PackageEnumerator {
 
             const tarball = path.join(packageInfo.packagePath, ref.substr(5));
             if (!fs.existsSync(tarball)) {
-                throw new Error("Unable to build project. Dependency tarball does not exist.");
+                throw new Error("Unable to build project. Dependency tarball " + tarball + " does not exist.");
             }
 
             const dependencyPath = path.join(packageInfo.packagePath, "node_modules", dependencyName);
@@ -219,7 +219,9 @@ export class BuildEnumerator extends PackageEnumerator {
                 console.log("blerf: detected changes in project reference, but no dependency changes. fast refresh " + names.join(" "));
                 const integrities: {[key: string]: string} = {};
                 for (let refreshProjectReference of refreshProjectReferences) {
-                    const dependencyPath = path.join(packageInfo.packagePath, "node_modules", refreshProjectReference.name);
+                    const packageNameNormalized = refreshProjectReference.name.replace("@", "").replace("/", "-")
+
+                    const dependencyPath = path.join(packageInfo.packagePath, "node_modules", packageNameNormalized);
                     await this.rimrafWithRetry(dependencyPath);
 
                     const sourceTarPath = path.join(this.artifactBuildPath, refreshProjectReference.name + ".tgz");
@@ -272,7 +274,9 @@ export class BuildEnumerator extends PackageEnumerator {
     private async packBuildArtifact(packagePath: string, packageJson: any, packages: PackagesType, targetTarPath: string) {
         childProcess.execSync("npm pack --loglevel error", {stdio: 'inherit', cwd: packagePath});
 
-        const sourceTarPath = path.join(packagePath, packageJson.name + "-" + packageJson.version + ".tgz");
+        const packageNameNormalized = packageJson.name.replace("@", "").replace("/", "-")
+
+        const sourceTarPath = path.join(packagePath, packageNameNormalized + "-" + packageJson.version + ".tgz");
         fs.mkdirSync(this.artifactBuildPath, { recursive: true });
 
         const tempPath = fs.mkdtempSync(path.join(os.tmpdir(), "blerf-"));

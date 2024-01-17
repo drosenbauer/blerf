@@ -27,11 +27,12 @@ export class PackEnumerator extends PackageEnumerator {
         console.log("blerf: packing and patching", packageJson.name);
         childProcess.execSync("npm pack", {stdio: 'inherit', cwd: packagePath});
 
-        const sourcePackageTarPath = path.join(packagePath, packageJson.name + "-" + packageJson.version + ".tgz");
+        const packageNameNormalized = packageJson.name.replace("@", "").replace("/", "-")
+        const sourcePackageTarPath = path.join(packagePath, packageNameNormalized + "-" + packageJson.version + ".tgz");
         const tempPath = fs.mkdtempSync(path.join(os.tmpdir(), "blerf-"));
         const artifactPackTarPath = path.join(this.artifactPackPath, packageJson.name + "-" + packageJson.version + ".tgz");
 
-        fs.mkdirSync(this.artifactPackPath, { recursive: true });
+        fs.mkdirSync(path.dirname(artifactPackTarPath), { recursive: true });
 
         try {
             tar.extract({ file: sourcePackageTarPath, cwd: tempPath, sync: true });

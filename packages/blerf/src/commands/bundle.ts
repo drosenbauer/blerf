@@ -28,7 +28,11 @@ export class BundleEnumerator extends PackageEnumerator {
         const artifactPackTarPath = path.join(this.artifactPackPath, packageJson.name + "-" + packageJson.version + ".tgz");
         const artifactTarPath = path.join(this.artifactDeployPath, packageJson.name + "-" + packageJson.version + ".tgz");
 
-        fs.mkdirSync(this.artifactDeployPath, { recursive: true });
+        const packTarContainerPath = path.dirname(artifactPackTarPath)
+        const tarContainerPath = path.dirname(artifactTarPath)
+
+        fs.mkdirSync(packTarContainerPath, { recursive: true });
+        fs.mkdirSync(tarContainerPath, { recursive: true });
 
         try {
             tar.extract({ file: artifactPackTarPath, cwd: tempPath, sync: true });
