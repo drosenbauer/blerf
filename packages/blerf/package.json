@@ -1,12 +1,13 @@
 {
   "name": "blerf",
-  "version": "0.0.11",
+  "version": "0.0.12",
   "description": "Build tool for nodejs monorepos working alongside npm. Helps manage multiple projects in a solution.",
   "author": "andersnm",
+  "maintainers": ["drosenbauer"],
   "license": "MIT",
   "repository": {
     "type": "git",
-    "url": "https://github.com/andersnm/blerf.git"
+    "url": "https://github.com/drosenbauer/blerf.git"
   },
   "bin": "lib/index.js",
   "files": [
@@ -27,8 +28,8 @@
     "istanbul-lib-report": "^3.0.0",
     "istanbul-lib-source-maps": "^4.0.1",
     "istanbul-reports": "^3.1.5",
-    "semver": "^6.0.0",
-    "source-map-resolve": "^0.5.2",
+    "semver": "^7.5.4",
+    "source-map-resolve": "^0.6.0",
     "source-map": "^0.7.3",
     "ssri": "^9.0.1",
     "v8-to-istanbul": "^2.0.4"
