@@ -20,6 +20,15 @@ export type PackageInfoType = {
 
 export type PackagesType = { [packageName: string]: PackageInfoType };
 
+
+export type PartialPackageJson = {
+    scripts: any;
+
+    blerf: any;
+
+    devDependencies: any;
+}
+
 export abstract class PackageEnumerator {
 
     rootPath: string;
@@ -51,7 +60,9 @@ export abstract class PackageEnumerator {
                 continue;
             }
 
-            nodes.push(packageJson.name);
+            let parentPackageName = packageJson.name
+
+            nodes.push(parentPackageName);
 
             const dependencies: PackageDependenciesType = {};
 
@@ -85,13 +96,14 @@ export abstract class PackageEnumerator {
         }
 
         for (let packageName of nodes) {
-            const packageInfo = packages[packageName];
-            const packageJson = packageInfo.packageJson;
+            const packageInfo: PackageInfoType = packages[packageName];
+            const packageJson: any = packageInfo.packageJson;
+            const packageJsonName: string = packageJson.name
 
             this.enumerateDependencies(packageJson, (name, version, dev) => {
                 if (version.startsWith("file:") && nodes.indexOf(name) !== -1) {
                     this.validateFileReference(version, name);
-                    edges.push([name, packageJson.name])
+                    edges.push([name, packageJsonName])
                 }
             });
         }
@@ -101,7 +113,7 @@ export abstract class PackageEnumerator {
 
         for (let packageName of sorted) {
             const packageInfo = packages[packageName];
-            const packageJson = packageInfo.packageJson;
+            const packageJson: any = packageInfo.packageJson;
             const packagePath = packageInfo.packagePath;
 
             try {
@@ -225,7 +237,7 @@ export abstract class PackageEnumerator {
         }
     }
 
-    protected trimPackageJson(packageJson: any) {
+    protected trimPackageJson(packageJson: PartialPackageJson) {
         // Remove stuff not needed in "binary" packge
         // TODO: remove everything except known keys
         delete packageJson.scripts;
